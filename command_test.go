@@ -7,11 +7,11 @@ import (
 	"strings"
 	"testing"
 
-	command "github.com/gloo-foo/cmd-tail"
 	gloo "github.com/gloo-foo/framework"
-
 	"github.com/gloo-foo/testable"
 	"github.com/gloo-foo/testable/assertion"
+
+	command "github.com/gloo-foo/cmd-tail"
 )
 
 // errUpstream is a sentinel emitted by a deliberately failing source so byte
@@ -30,7 +30,9 @@ func (f failingSource) Stream(ctx context.Context) gloo.Stream[[]byte] { return 
 func TestTail_DefaultTenLines(t *testing.T) {
 	var b strings.Builder
 	for i := 1; i <= 15; i++ {
-		fmt.Fprintf(&b, "%d\n", i)
+		// strings.Builder.Write never returns an error (documented contract); the
+		// blank assignment acknowledges the error return the linter sees.
+		_, _ = fmt.Fprintf(&b, "%d\n", i)
 	}
 	lines, err := testable.TestLines(command.Tail(), b.String())
 	assertion.NoError(t, err)
@@ -46,7 +48,9 @@ func TestTail_LessThanDefault(t *testing.T) {
 func TestTail_ExactlyTenLines(t *testing.T) {
 	var b strings.Builder
 	for i := 1; i <= 10; i++ {
-		fmt.Fprintf(&b, "%d\n", i)
+		// strings.Builder.Write never returns an error (documented contract); the
+		// blank assignment acknowledges the error return the linter sees.
+		_, _ = fmt.Fprintf(&b, "%d\n", i)
 	}
 	lines, err := testable.TestLines(command.Tail(), b.String())
 	assertion.NoError(t, err)
@@ -94,15 +98,15 @@ func TestTail_ExactlyN(t *testing.T) {
 func TestTail_TableDriven(t *testing.T) {
 	tests := []struct {
 		name     string
-		n        command.TailLines
 		input    string
 		expected []string
+		n        command.TailLines
 	}{
-		{"three from five", 3, "a\nb\nc\nd\ne\n", []string{"c", "d", "e"}},
-		{"one line", 1, "first\nsecond\nthird\n", []string{"third"}},
-		{"all lines", 5, "a\nb\n", []string{"a", "b"}},
-		{"with empty lines", 3, "a\n\nb\nc\n", []string{"", "b", "c"}},
-		{"unicode", 2, "hello\nworld\nend\n", []string{"world", "end"}},
+		{"three from five", "a\nb\nc\nd\ne\n", []string{"c", "d", "e"}, 3},
+		{"one line", "first\nsecond\nthird\n", []string{"third"}, 1},
+		{"all lines", "a\nb\n", []string{"a", "b"}, 5},
+		{"with empty lines", "a\n\nb\nc\n", []string{"", "b", "c"}, 3},
+		{"unicode", "hello\nworld\nend\n", []string{"world", "end"}, 2},
 	}
 
 	for _, tt := range tests {
@@ -183,7 +187,9 @@ func TestTail_ZeroLinesFallsBackToDefault(t *testing.T) {
 	// TailLines(0) is not "zero lines"; it resolves to the ten-line default.
 	var b strings.Builder
 	for i := 1; i <= 12; i++ {
-		fmt.Fprintf(&b, "%d\n", i)
+		// strings.Builder.Write never returns an error (documented contract); the
+		// blank assignment acknowledges the error return the linter sees.
+		_, _ = fmt.Fprintf(&b, "%d\n", i)
 	}
 	lines, err := testable.TestLines(command.Tail(command.TailLines(0)), b.String())
 	assertion.NoError(t, err)
@@ -194,7 +200,9 @@ func TestTail_NegativeLinesFallsBackToDefault(t *testing.T) {
 	// A negative count is likewise treated as the ten-line default.
 	var b strings.Builder
 	for i := 1; i <= 11; i++ {
-		fmt.Fprintf(&b, "%d\n", i)
+		// strings.Builder.Write never returns an error (documented contract); the
+		// blank assignment acknowledges the error return the linter sees.
+		_, _ = fmt.Fprintf(&b, "%d\n", i)
 	}
 	lines, err := testable.TestLines(command.Tail(command.TailLines(-5)), b.String())
 	assertion.NoError(t, err)
@@ -226,7 +234,9 @@ func TestTail_Bytes_PropagatesUpstreamError(t *testing.T) {
 func TestTail_ManyLines(t *testing.T) {
 	var b strings.Builder
 	for i := 1; i <= 1000; i++ {
-		fmt.Fprintf(&b, "line %d\n", i)
+		// strings.Builder.Write never returns an error (documented contract); the
+		// blank assignment acknowledges the error return the linter sees.
+		_, _ = fmt.Fprintf(&b, "line %d\n", i)
 	}
 	lines, err := testable.TestLines(command.Tail(command.TailLines(10)), b.String())
 	assertion.NoError(t, err)

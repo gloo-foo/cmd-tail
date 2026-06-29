@@ -3,9 +3,9 @@ package tail_test
 import (
 	"fmt"
 
-	command "github.com/gloo-foo/cmd-tail"
-
 	"github.com/gloo-foo/testable"
+
+	command "github.com/gloo-foo/cmd-tail"
 )
 
 func ExampleTail_basic() {

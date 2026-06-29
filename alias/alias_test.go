@@ -4,8 +4,9 @@ import (
 	"slices"
 	"testing"
 
-	tail "github.com/gloo-foo/cmd-tail/alias"
 	"github.com/gloo-foo/testable"
+
+	tail "github.com/gloo-foo/cmd-tail/alias"
 )
 
 // The alias package re-exports the tail constructor and its flag types under
